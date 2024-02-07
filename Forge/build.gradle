@@ -162,6 +162,10 @@ repositories {
         url = 'https://thedarkcolour.github.io/KotlinForForge/'
         content { includeGroup "thedarkcolour" }
     }
+
+    maven {
+        url = 'https://maven.blamejared.com'
+    }
 }
 
 dependencies {
@@ -175,10 +179,10 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    compileOnly fg.deobf("$modID:paucal-forge-$minecraftVersion:$paucalVersion")
-    runtimeOnly fg.deobf("$modID:paucal-forge-$minecraftVersion:$paucalVersion")
-    compileOnly fg.deobf("$modID:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
-    runtimeOnly fg.deobf("$modID:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
+    compileOnly fg.deobf("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
+    runtimeOnly fg.deobf("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
+    compileOnly fg.deobf("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
+    runtimeOnly fg.deobf("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
     compileOnly fg.deobf("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
     runtimeOnly fg.deobf("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
 
