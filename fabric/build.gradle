@@ -1,75 +1,36 @@
 plugins {
-    id 'fabric-loom' version "$loomVersion"
-    id "com.modrinth.minotaur" version "2.+"
-    // It's safest to have this on 2.+ to get the latest features and
-    // bug fixes without having to worry about breaking changes.
+    id 'com.github.johnrengelman.shadow'
 }
 
-archivesBaseName = getArtifactID("fabric")
-
-loom {
-    mixin.defaultRefmapName = "hexal.mixins.refmap.json"
-
-    accessWidenerPath = file("src/main/resources/hexal.accesswidener")
-
-    runs {
-        client {
-            client()
-            setConfigName("Fabric Client")
-        }
-        server {
-            server()
-            setConfigName("Fabric Server")
-        }
-        datagen {
-            client()
-            vmArg "-Dfabric-api.datagen"
-            vmArg "-Dfabric-api.datagen.modid=${modID}"
-            vmArg "-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}"
-        }
-
-        configureEach {
-            runDir "Fabric/run"
-            ideConfigGenerated(true)
-        }
-    }
+architectury {
+    platformSetupLoomIde()
+    fabric()
 }
 
-repositories {
-    mavenCentral()
+configurations {
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
 
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    flatDir {
-        dir 'libs'
+    // Files in this configuration will be bundled into your mod using the Shadow plugin.
+    // Don't use the `shadow` configuration from the plugin itself as it's meant for excluding files.
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
     }
-
-    maven { url "https://maven.shedaniel.me/" }
-    maven {
-        name = "Ladysnake Mods"
-        url = 'https://maven.ladysnake.org/releases'
-    }
-    maven {
-        name "entity reach"
-        url "https://maven.jamieswhiteshirt.com/libs-release/"
-    }
-    maven { url "https://mvn.devos.one/snapshots/" }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
-    }
-    maven {
-        url 'https://repo.sleeping.town'
-        content {
-            includeGroup 'com.unascribed'
-        }
-    }
-
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraftVersion}"
-    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+    modImplementation files("${rootProject.rootDir}/libs/moreiotas-fabric-1.20.1-0.1.0-3.jar")
+
     modImplementation("net.fabricmc:fabric-language-kotlin:${fabricLanguageKotlinVersion}")
     modImplementation "net.fabricmc:fabric-loader:${fabricLoaderVersion}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
@@ -78,13 +39,11 @@ dependencies {
     compileOnly "com.demonwav.mcdev:annotations:1.0"
 
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-    compileOnly project(":Common")
 
     modImplementation "at.petra-k.paucal:paucal-fabric-$minecraftVersion:$paucalVersion"
     modImplementation("at.petra-k.hexcasting:hexcasting-fabric-$minecraftVersion:$hexcastingVersion") {
         exclude module: "phosphor"
     }
-    modImplementation "$modID:moreiotas-fabric-$minecraftVersion:$moreIotasVersion"
     modImplementation "vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FABRIC-SNAPSHOT"
 
     modImplementation "me.zeroeightsix:fiber:$fiberVersion"
@@ -93,8 +52,7 @@ dependencies {
     modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-api:$cardinalComponentsVersion"
     include "dev.onyxstudios.cardinal-components-api:cardinal-components-api:$cardinalComponentsVersion"
 
-    modImplementation "$modID:serialization-hooks:$serializationHooksVersion"
-    include "$modID:serialization-hooks:$serializationHooksVersion"
+    modImplementation files("${rootProject.rootDir}/libs/serialization-hooks-0.4.99999.jar")
     implementation(include("com.github.LlamaLad7:MixinExtras:0.1.1"))
 
     modImplementation "software.bernie.geckolib:geckolib-fabric-$minecraftVersion:$geckolibVersion"
@@ -122,62 +80,24 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-}
 
-tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
-}
-compileKotlin {
-    source(project(":Common").sourceSets.main.kotlin)
-}
-
-sourcesJar {
-    from project(":Common").sourceSets.main.allJava
-}
-
-sourceSets {
-    main.resources.srcDirs += ['src/generated/resources', '../Common/src/generated/resources']
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 }
 
 processResources {
-    from project(":Common").sourceSets.main.resources
-    inputs.property "version", project.version
+    inputs.property 'version', project.version
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
+    filesMatching('fabric.mod.json') {
+        expand version: project.version
     }
 }
 
-def loadProperties = { filename ->
-    def properties = new Properties()
-    rootProject.file(filename).withInputStream {
-        properties.load(it)
-    }
-    return properties
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = 'dev-shadow'
 }
 
-modrinth {
-    token = loadProperties("keys.properties").MODRINTH_TOKEN
-    projectId = "$modID" // This can be the project ID or the slug. Either will work!
-    versionNumber = "$modVersion" // You don't need to set this manually. Will fail if Modrinth has this version already
-    versionName = "$modVersion-fabric"
-    changelog = rootProject.file("changelog.md").text
-
-    versionType = "release" // This is the default -- can also be `beta` or `alpha`
-    uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.19.2"] // Must be an array, even with only one version
-    loaders = ["fabric"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
-    dependencies { // A special DSL for creating dependencies
-        // scope.type
-        // The scope can be `required`, `optional`, `incompatible`, or `embedded`
-        // The type can either be `project` or `version`
-        required.project "hex-casting" // Creates a new required dependency on Hex Casting
-        required.project "paucal"
-        required.project "patchouli"
-        required.project "fabric-language-kotlin"
-        required.project "cardinal-components-api"
-        required.project "geckolib"
-    }
+remapJar {
+    input.set shadowJar.archiveFile
 }
-
-setupJar(this)

@@ -1,81 +1,26 @@
-plugins {
-    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
-}
-
-tasks.withType(Javadoc) {
-    enabled = false
-}
-
-archivesBaseName = getArtifactID("common")
-
-minecraft {
-    version(minecraftVersion)
-    accessWideners 'src/main/resources/hexalplat.accesswidener'
-}
-
-repositories {
-    mavenCentral()
-
-//     If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-     flatDir {
-         dir 'libs'
-     }
-
-    maven { url 'https://maven.blamejared.com' }
-
-    maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
-
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+architectury {
+    common rootProject.enabled_platforms.split(',')
 }
 
 dependencies {
-    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+    // We depend on Fabric Loader here to use the Fabric @Environment annotations,
+    // which get remapped to the correct annotations on each platform.
+    // Do NOT use other classes from Fabric Loader.
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
-    compileOnly "at.petra-k.paucal:paucal-common-$minecraftVersion:$paucalVersion"
-    compileOnly "at.petra-k.hexcasting:hexcasting-common-$minecraftVersion:$hexcastingVersion"
-    compileOnly "$modID:moreiotas-common-$minecraftVersion:$moreIotasVersion"
-    compileOnly "vazkii.patchouli:Patchouli-xplat:$minecraftVersion-$patchouliVersion-SNAPSHOT"
-    compileOnly "software.bernie.geckolib:geckolib-forge-$minecraftVersion:$geckolibVersion"
+    modCompileOnly "at.petra-k.paucal:paucal-common-$minecraftVersion:$paucalVersion"
+    modCompileOnly "at.petra-k.hexcasting:hexcasting-common-$minecraftVersion:$hexcastingVersion"
+    modCompileOnly files("${rootProject.rootDir}/libs/moreiotas-common-1.20.1-0.1.0-3.jar")
+    modCompileOnly "vazkii.patchouli:Patchouli-xplat:$minecraftVersion-$patchouliVersion-SNAPSHOT"
+    modCompileOnly "software.bernie.geckolib:geckolib-forge-$minecraftVersion:$geckolibVersion"
 
     testImplementation "at.petra-k.paucal:paucal-common-$minecraftVersion:$paucalVersion"
     testImplementation "at.petra-k.hexcasting:hexcasting-common-$minecraftVersion:$hexcastingVersion"
-    testImplementation "$modID:moreiotas-common-$minecraftVersion:$moreIotasVersion"
+    testImplementation files("${rootProject.rootDir}/libs/moreiotas-common-1.20.1-0.1.0-3.jar")
     testImplementation "vazkii.patchouli:Patchouli-xplat:$minecraftVersion-$patchouliVersion-SNAPSHOT"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-}
 
-test {
-    useJUnitPlatform()
 }
-
-processResources {
-    def buildProps = project.properties.clone()
-
-    filesMatching(['pack.mcmeta']) {
-        expand buildProps
-    }
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
-
-setupJar(this)
