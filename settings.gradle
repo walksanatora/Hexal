@@ -17,4 +17,4 @@ pluginManagement {
 }
 
 rootProject.name = 'Hexal'
-include("Common", "Fabric") //TODO: fix "FORGE"
+include("Common", "Fabric", "Forge") //TODO: fix "FORGE"

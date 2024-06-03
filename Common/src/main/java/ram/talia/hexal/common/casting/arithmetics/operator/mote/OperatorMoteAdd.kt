@@ -6,7 +6,6 @@ import at.petrak.hexcasting.api.casting.arithmetic.predicates.IotaPredicate.ofTy
 import at.petrak.hexcasting.api.casting.asActionResult
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment
 import at.petrak.hexcasting.api.casting.eval.OperationResult
-import at.petrak.hexcasting.api.casting.eval.sideeffects.EvalSound
 import at.petrak.hexcasting.api.casting.eval.vm.CastingImage
 import at.petrak.hexcasting.api.casting.eval.vm.SpellContinuation
 import at.petrak.hexcasting.api.casting.iota.Iota
@@ -16,38 +15,40 @@ import ram.talia.hexal.common.casting.arithmetics.operator.nextMote
 import ram.talia.hexal.common.lib.hex.HexalIotaTypes.MOTE
 
 object OperatorMoteAdd : Operator(2, IotaMultiPredicate.all(ofType(MOTE))) {
-     fun apply(iotas: Iterable<Iota>, env: CastingEnvironment): Iterable<Iota> {
-        val it = iotas.iterator().withIndex()
-
-        val absorber = it.nextMote(arity)
-        val absorbee = it.nextMote(arity)
-
-        if (absorber == null || absorbee == null) {
-            // ensure always 1 iota returned to the stack.
-            val toReturn = listOfNotNull(absorber?.copy(), absorbee?.copy())
-            return toReturn.ifEmpty { null.asActionResult }
-        }
-        if (absorber.itemIndex == absorbee.itemIndex)
-            return listOf(absorber.copy())
-
-        if (!absorber.typeMatches(absorbee))
-            throw MishapInvalidIota.of(absorbee, 0, "cant_combine_motes")
-
-        absorber.absorb(absorbee)
-
-        return listOfNotNull(absorber.copy())
-    }
 
     override fun operate(
         env: CastingEnvironment,
         image: CastingImage,
         continuation: SpellContinuation
     ): OperationResult {
-        val stack = image.stack.toMutableList()
-        val input = mutableListOf(stack.removeFirst(),stack.removeFirst())
-        stack.addAll(apply(input,env))
+        val it = image.stack.reversed().iterator().withIndex()
+        var ares: Iota? = null
+        val absorber = it.nextMote(arity)
+        val absorbee = it.nextMote(arity)
+
+        if (absorber == null || absorbee == null) {
+            // ensure always 1 iota returned to the stack.
+            val toReturn = listOfNotNull(absorber?.copy(), absorbee?.copy())
+            ares = toReturn.ifEmpty { null.asActionResult }.first()
+        }
+        if (ares == null) {
+            if (absorber!!.itemIndex == absorbee!!.itemIndex)
+                ares = absorber.copy()
+            if (ares == null) {
+                if (!absorber.typeMatches(absorbee))
+                    throw MishapInvalidIota.of(absorbee, 0, "cant_combine_motes")
+
+                absorber.absorb(absorbee)
+                ares = absorber.copy()
+            }
+        }
+
+        
+        val output = mutableListOf<Iota>()
+        it.asSequence().toMutableList().reversed().forEach {output.add(it.value)}
+        output.add(ares!!)
         return OperationResult(
-            image.copy(stack),
+            image.copy(output),
             listOf(),
             continuation,
             HexEvalSounds.NORMAL_EXECUTE
