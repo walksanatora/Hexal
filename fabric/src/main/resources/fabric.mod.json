@@ -41,8 +41,7 @@
     ]
   },
   "mixins": [
-    "hexalplat.mixins.json",
-    "hexal.mixins.json"
+    "hexalplat.mixins.json"
   ],
   "accessWidener": "hexal.accesswidener",
 

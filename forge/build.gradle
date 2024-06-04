@@ -3,7 +3,13 @@ plugins {
 }
 
 loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
     forge {
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "hexalplat.mixins.json"
         mixinConfig "hexal.mixins.json"
     }
 }
@@ -37,7 +43,7 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
 
 
-    modImplementation "thedarkcolour:kotlinforforge:$kotlinForForgeVersion"
+    implementation "thedarkcolour:kotlinforforge:$kotlinForForgeVersion"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
@@ -57,30 +63,7 @@ dependencies {
     modCompileOnly ("top.theillusivec4.curios:curios-forge:$curiosVersion+$minecraftVersion:api")
     modRuntimeOnly ("top.theillusivec4.curios:curios-forge:$curiosVersion+$minecraftVersion")
 
-    // Testing dependencies:
-    testCompileOnly project(":common")
-
-    testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
-    testCompileOnly("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
-    testRuntimeOnly("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
-    testCompileOnly("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
-    testRuntimeOnly("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
-    testCompileOnly files("${rootProject.rootDir}/libs/moreiotas-fabric-1.20.1-0.1.0-3.jar")
-    testRuntimeOnly files("${rootProject.rootDir}/libs/moreiotas-fabric-1.20.1-0.1.0-3.jar")
-    testCompileOnly("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
-    testRuntimeOnly("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
-
-    testCompileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-}
-
-processResources {
-    inputs.property 'version', project.version
-
-    filesMatching('META-INF/mods.toml') {
-        expand version: project.version
-    }
+    testImplementation project(":common")
 }
 
 shadowJar {

@@ -14,9 +14,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 import ram.talia.hexal.api.HexalAPI;
 
-import javax.annotation.Nullable;
 import java.util.ServiceLoader;
 import java.util.function.Function;
 import java.util.stream.Collectors;
