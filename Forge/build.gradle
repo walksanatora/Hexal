@@ -178,39 +178,39 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    compileOnly fg.deobf("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
-    runtimeOnly fg.deobf("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
-    compileOnly fg.deobf("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
-    runtimeOnly fg.deobf("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
-    compileOnly fg.deobf("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
-    runtimeOnly fg.deobf("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
+    compileOnly ("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
+    runtimeOnly ("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
+    compileOnly ("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
+    runtimeOnly ("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
+    compileOnly ("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
+    runtimeOnly ("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
 
-    compileOnly fg.deobf("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
-    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
+    compileOnly ("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
+    runtimeOnly ("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
 
-    implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:$caelusVersion")
+    implementation ("top.theillusivec4.caelus:caelus-forge:$caelusVersion")
 
-    implementation fg.deobf("software.bernie.geckolib:geckolib-forge-$minecraftVersion:$geckolibVersion")
-    implementation fg.deobf("com.eliotlash.mclib:mclib:20") // dependency of geckolib that isn't being transitivelyied properly
+    implementation ("software.bernie.geckolib:geckolib-forge-$minecraftVersion:$geckolibVersion")
+    implementation ("com.eliotlash.mclib:mclib:20") // dependency of geckolib that isn't being transitivelyied properly
 
     // Optional interop
 
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:$curiosVersion+$minecraftVersion:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:$curiosVersion+$minecraftVersion")
+    compileOnly ("top.theillusivec4.curios:curios-forge:$curiosVersion+$minecraftVersion:api")
+    runtimeOnly ("top.theillusivec4.curios:curios-forge:$curiosVersion+$minecraftVersion")
 
     // Testing dependencies:
     testCompileOnly project(":Common")
 
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    testCompileOnly fg.deobf("$modID:paucal-forge-$minecraftVersion:$paucalVersion")
-    testRuntimeOnly fg.deobf("$modID:paucal-forge-$minecraftVersion:$paucalVersion")
-    testCompileOnly fg.deobf("$modID:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
-    testRuntimeOnly fg.deobf("$modID:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
-    testCompileOnly fg.deobf("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
-    testRuntimeOnly fg.deobf("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
-    testCompileOnly fg.deobf("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
-    testRuntimeOnly fg.deobf("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
+    testCompileOnly ("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
+    testRuntimeOnly ("at.petra-k.paucal:paucal-forge-$minecraftVersion:$paucalVersion")
+    testCompileOnly ("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
+    testRuntimeOnly ("at.petra-k.hexcasting:hexcasting-forge-$minecraftVersion:$hexcastingVersion")
+    testCompileOnly ("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
+    testRuntimeOnly ("$modID:moreiotas-forge-$minecraftVersion:$moreIotasVersion")
+    testCompileOnly ("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
+    testRuntimeOnly ("vazkii.patchouli:Patchouli:$minecraftVersion-$patchouliVersion-FORGE-SNAPSHOT")
 
     testCompileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'

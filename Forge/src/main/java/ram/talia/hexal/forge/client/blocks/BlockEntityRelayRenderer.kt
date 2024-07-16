@@ -42,4 +42,8 @@ class BlockEntityRelayRenderer : GeoBlockRenderer<BlockEntityRelay>(BlockEntityR
     override fun getRenderType(animatable: BlockEntityRelay, texture: ResourceLocation, bufferSource: MultiBufferSource?, partialTick: Float): RenderType {
         return RenderType.entityTranslucent(getTextureLocation(animatable))
     }
+
+    override fun render(p0: BlockEntityRelay, p1: Float, p2: PoseStack, p3: MultiBufferSource, p4: Int, p5: Int) {
+        //TODO("Not yet implemented")
+    }
 }
